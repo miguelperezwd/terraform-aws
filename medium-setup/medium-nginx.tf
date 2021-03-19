@@ -235,33 +235,33 @@ resource "aws_instance" "nginx1" {
 
   provisioner "file" {
     content = <<EOF
-              access_key =
-              secret_key =
-              security_token =
-              use_https = True
-              bucket_location = US
+access_key =
+secret_key =
+security_token =
+use_https = True
+bucket_location = US
 
-              EOF
+EOF
     destination = "/home/ec2-user/.s3cfg"
   }
 
   provisioner "file" {
     content = <<EOF
-              /var/log/nginx/*log {
-                  daily
-                  rotate 10
-                  missingok
-                  compress
-                  sharedscripts
-                  postrotate
-                  endscript
-                  lastaction
-                      INSTANCE_ID=`curl --silent http://169.254.169.254/latest/meta-data/instance-id`
-                      sudo /usr/local/bin/s3cmd sync --config=/home/ec2-user/.s3cfg /var/log/nginx/ s3://${aws_s3_bucket.web_bucket.id}/nginx/$INSTANCE_ID/
-                  endscript
-              }
+/var/log/nginx/*log {
+    daily
+    rotate 10
+    missingok
+    compress
+    sharedscripts
+    postrotate
+    endscript
+    lastaction
+        INSTANCE_ID=`curl --silent http://169.254.169.254/latest/meta-data/instance-id`
+        sudo /usr/local/bin/s3cmd sync --config=/home/ec2-user/.s3cfg /var/log/nginx/ s3://${aws_s3_bucket.web_bucket.id}/nginx/$INSTANCE_ID/
+    endscript
+}
 
-              EOF
+EOF
     destination = "/home/ec2-user/nginx"
   }
 
@@ -304,33 +304,33 @@ resource "aws_instance" "nginx2" {
 
   provisioner "file" {
     content = <<EOF
-              access_key =
-              secret_key =
-              security_token =
-              use_https = True
-              bucket_location = US
+access_key =
+secret_key =
+security_token =
+use_https = True
+bucket_location = US
 
-              EOF
+EOF
     destination = "/home/ec2-user/.s3cfg"
   }
 
   provisioner "file" {
     content = <<EOF
-              /var/log/nginx/*log {
-                  daily
-                  rotate 10
-                  missingok
-                  compress
-                  sharedscripts
-                  postrotate
-                  endscript
-                  lastaction
-                      INSTANCE_ID=`curl --silent http://169.254.169.254/latest/meta-data/instance-id`
-                      sudo /usr/local/bin/s3cmd sync --config=/home/ec2-user/.s3cfg /var/log/nginx/ s3://${aws_s3_bucket.web_bucket.id}/nginx/$INSTANCE_ID/
-                  endscript
-              }
+/var/log/nginx/*log {
+    daily
+    rotate 10
+    missingok
+    compress
+    sharedscripts
+    postrotate
+    endscript
+    lastaction
+        INSTANCE_ID=`curl --silent http://169.254.169.254/latest/meta-data/instance-id`
+        sudo /usr/local/bin/s3cmd sync --config=/home/ec2-user/.s3cfg /var/log/nginx/ s3://${aws_s3_bucket.web_bucket.id}/nginx/$INSTANCE_ID/
+    endscript
+}
 
-              EOF
+EOF
     destination = "/home/ec2-user/nginx"
   }
 
@@ -360,20 +360,20 @@ resource "aws_iam_role" "allow_nginx_s3" {
   name = "allow_nginx_s3"
 
   assume_role_policy = <<EOF
-                        {
-                          "Version": "2012-10-17",
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Principal": {
-                                "Service": "ec2.amazonaws.com"
-                              },
-                              "Effect": "Allow",
-                              "Sid": ""
-                            }
-                          ]
-                        }
-                        EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_iam_instance_profile" "nginx_profile" {
@@ -386,22 +386,22 @@ resource "aws_iam_role_policy" "allow_s3_all" {
   role = aws_iam_role.allow_nginx_s3.name
 
   policy = <<EOF
-            {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Action": [
-                    "s3:*"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                            "arn:aws:s3:::${local.s3_bucket_name}",
-                            "arn:aws:s3:::${local.s3_bucket_name}/*"
-                        ]
-                }
-              ]
-            }
-            EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+                "arn:aws:s3:::${local.s3_bucket_name}",
+                "arn:aws:s3:::${local.s3_bucket_name}/*"
+            ]
+    }
+  ]
+}
+EOF
 
   }
 
